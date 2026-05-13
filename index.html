@@ -491,6 +491,11 @@ function renderOutput(){
     </div>`;
   }).join('');
 
+  const areaEnvio=json.areas.find(a=>a.noticias.length>0)?.nombre||'Sin especificar';
+  const resumen=json.areas.map(a=>
+    a.noticias.map(n=>`[${n.tipo.toUpperCase()}] ${n.titulo}: ${n.descripcion}`).join('\n')
+  ).filter(Boolean).join('\n\n');
+
   p.innerHTML=`
   <div class="panel-head">
     <h2>¡Listo! Envía tu reporte</h2>
@@ -517,7 +522,7 @@ function renderOutput(){
     <div style="font-size:32px;margin-bottom:10px">⚠️</div>
     <div class="send-title" style="color:var(--ro)">No se pudo enviar automáticamente</div>
     <div class="send-sub" style="margin-top:6px;margin-bottom:16px">Copia el JSON manualmente y envíalo por WhatsApp o Teams.</div>
-    <button class="btn-copy" id="copy-btn">📋 Copiar JSON</button>
+    <button class="btn-copy" id="copy-btn-err">📋 Copiar JSON</button>
   </div>
 
   <details style="margin-top:20px">
@@ -531,19 +536,18 @@ function renderOutput(){
     btn.disabled=true;
     btn.style.opacity='0.7';
 
-    const area_responsable=S.areas[Object.keys(S.areas).find(k=>S.areas[k].noticias.some(n=>n.titulo))||'ops'];
-    const payload={
-      mes: json.mes,
-      area: json.areas.find(a=>a.noticias.length>0)?.nombre || 'Sin especificar',
-      noticias_cargadas: filled,
-      json_completo: js,
-    };
+    const formData=new FormData();
+    formData.append('Mes',          json.mes);
+    formData.append('Area',         areaEnvio);
+    formData.append('Novedades',    resumen);
+    formData.append('JSON_Completo',js);
+    formData.append('_subject',     'Boletín Rehavid – Reporte de ' + areaEnvio + ' · ' + json.mes);
 
     try{
       const res=await fetch('https://formspree.io/f/xwvyzzpv',{
         method:'POST',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify(payload),
+        headers:{'Accept':'application/json'},
+        body:formData,
       });
       if(res.ok){
         $('send-box').style.display='none';
@@ -555,7 +559,7 @@ function renderOutput(){
     } catch(e){
       $('send-box').style.display='none';
       $('send-error').style.display='block';
-      const cb=$('copy-btn');
+      const cb=$('copy-btn-err');
       if(cb) cb.addEventListener('click',()=>{
         navigator.clipboard.writeText(js).then(()=>{
           cb.classList.add('copied');cb.textContent='✓ Copiado';
