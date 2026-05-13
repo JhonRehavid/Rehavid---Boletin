@@ -122,6 +122,22 @@ code{background:var(--surface);border:1px solid var(--border);border-radius:4px;
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--rg-d);color:white;padding:12px 24px;border-radius:50px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+.send-box{background:var(--rn);border-radius:var(--radius);padding:28px 32px;display:flex;align-items:center;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.send-icon{font-size:36px;flex-shrink:0}
+.send-copy{flex:1;min-width:180px}
+.send-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:white;margin-bottom:4px}
+.send-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5}
+.btn-send{padding:14px 28px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:none;background:var(--rg);color:var(--rn);font-family:'Syne',sans-serif;transition:all .18s;flex-shrink:0;white-space:nowrap}
+.btn-send:hover{background:#00e68a;transform:translateY(-1px)}
+.btn-send:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+.send-success,.send-error{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:36px 32px;text-align:center;margin-bottom:20px}
+.send-success{border-color:var(--rg)}
+.send-error{border-color:var(--ro)}
+
+details summary{padding:8px 0;list-style:none}
+details summary::-webkit-details-marker{display:none}
+
 .divider{height:1px;background:var(--border);margin:24px 0}
 
 @media(max-width:560px){
@@ -477,37 +493,76 @@ function renderOutput(){
 
   p.innerHTML=`
   <div class="panel-head">
-    <h2>JSON generado ✓</h2>
-    <p>${filled} de 5 áreas con contenido cargado este mes.</p>
+    <h2>¡Listo! Envía tu reporte</h2>
+    <p>${filled} de 5 áreas con contenido · Haz clic en <strong>Enviar a Rehavid</strong> para que llegue automáticamente.</p>
   </div>
   <div class="summary-strip">${cards}</div>
-  <div class="copy-row">
-    <button class="btn-copy" id="copy-btn">📋 Copiar JSON</button>
-    <button class="btn" onclick="goTo(0)">← Volver a editar</button>
-  </div>
-  <div class="json-box"><pre id="json-pre">${escH(js)}</pre></div>
-  <div class="instruction-box">
-    <h3>¿Cómo usar este JSON en el boletín?</h3>
-    <ol class="step-list">
-      <li>Copia el JSON con el botón de arriba.</li>
-      <li>Abre el archivo <code>boletin.html</code> en un editor de texto.</li>
-      <li>Busca la línea <code>const BD = {</code> y reemplaza todo el objeto.</li>
-      <li>Guarda el archivo y distribúyelo por correo o Teams.</li>
-    </ol>
-  </div>`;
 
-  $('copy-btn').addEventListener('click',()=>{
-    navigator.clipboard.writeText(js).then(()=>{
-      const btn=$('copy-btn');
-      btn.classList.add('copied');btn.textContent='✓ Copiado';
-      toast('JSON copiado al portapapeles');
-      setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋 Copiar JSON';},2500);
-    }).catch(()=>{
-      const el=$('json-pre');
-      const sel=window.getSelection(),r=document.createRange();
-      r.selectNodeContents(el);sel.removeAllRanges();sel.addRange(r);
-      toast('Selecciona el texto y copia con Ctrl+C');
-    });
+  <div class="send-box" id="send-box">
+    <div class="send-icon">📨</div>
+    <div class="send-copy">
+      <div class="send-title">Enviar reporte automáticamente</div>
+      <div class="send-sub">Tu información llegará directo al responsable del boletín sin que tengas que copiar nada.</div>
+    </div>
+    <button class="btn-send" id="btn-send">Enviar a Rehavid →</button>
+  </div>
+
+  <div class="send-success" id="send-success" style="display:none">
+    <div style="font-size:40px;margin-bottom:12px">✅</div>
+    <div class="send-title" style="color:var(--rg-d)">¡Reporte enviado correctamente!</div>
+    <div class="send-sub" style="margin-top:6px">El responsable del boletín recibió tu información. No necesitas hacer nada más.</div>
+  </div>
+
+  <div class="send-error" id="send-error" style="display:none">
+    <div style="font-size:32px;margin-bottom:10px">⚠️</div>
+    <div class="send-title" style="color:var(--ro)">No se pudo enviar automáticamente</div>
+    <div class="send-sub" style="margin-top:6px;margin-bottom:16px">Copia el JSON manualmente y envíalo por WhatsApp o Teams.</div>
+    <button class="btn-copy" id="copy-btn">📋 Copiar JSON</button>
+  </div>
+
+  <details style="margin-top:20px">
+    <summary style="font-size:12px;color:var(--muted);cursor:pointer;user-select:none">Ver JSON generado</summary>
+    <div class="json-box" style="margin-top:12px"><pre id="json-pre">${escH(js)}</pre></div>
+  </details>`;
+
+  $('btn-send').addEventListener('click', async ()=>{
+    const btn=$('btn-send');
+    btn.textContent='Enviando...';
+    btn.disabled=true;
+    btn.style.opacity='0.7';
+
+    const area_responsable=S.areas[Object.keys(S.areas).find(k=>S.areas[k].noticias.some(n=>n.titulo))||'ops'];
+    const payload={
+      mes: json.mes,
+      area: json.areas.find(a=>a.noticias.length>0)?.nombre || 'Sin especificar',
+      noticias_cargadas: filled,
+      json_completo: js,
+    };
+
+    try{
+      const res=await fetch('https://formspree.io/f/xwvyzzpv',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(payload),
+      });
+      if(res.ok){
+        $('send-box').style.display='none';
+        $('send-success').style.display='block';
+        toast('✅ Reporte enviado correctamente');
+      } else {
+        throw new Error('Error '+res.status);
+      }
+    } catch(e){
+      $('send-box').style.display='none';
+      $('send-error').style.display='block';
+      const cb=$('copy-btn');
+      if(cb) cb.addEventListener('click',()=>{
+        navigator.clipboard.writeText(js).then(()=>{
+          cb.classList.add('copied');cb.textContent='✓ Copiado';
+          setTimeout(()=>{cb.classList.remove('copied');cb.textContent='📋 Copiar JSON';},2500);
+        });
+      });
+    }
   });
 }
 
