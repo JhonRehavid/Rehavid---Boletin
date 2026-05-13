@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Boletín Interno Rehavid – Mayo 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --rp: #3a1fa8;
+    --rp-l: #5b3dd4;
+    --rp-x: #8a72e8;
+    --rg: #00c47a;
+    --rg-d: #009e63;
+    --ro: #ff6b2b;
+    --rn: #0f1535;
+    --rn-m: #1c2554;
+    --ink: #1a1a2e;
+    --ink-m: #3a3a5c;
+    --muted: #7a7a9a;
+    --surface: #f0effe;
+    --white: #ffffff;
+    --border: #e0ddf5;
+    --radius: 16px;
+    --rs: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); font-size: 15px; line-height: 1.65; }
+
+  /* HEADER */
+  .header { background: var(--rn); padding: 0; position: relative; overflow: hidden; }
+  .header-geo { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .header-geo::before { content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%; background: var(--rp); opacity: .35; top: -200px; right: -120px; }
+  .header-geo::after  { content: ''; position: absolute; width: 280px; height: 280px; border-radius: 50%; background: var(--rg); opacity: .15; bottom: -80px; left: 60px; }
+  .header-inner { max-width: 920px; margin: 0 auto; padding: 44px 32px 40px; display: flex; align-items: center; gap: 28px; position: relative; z-index: 1; }
+  .logo-pill { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 14px; padding: 14px 22px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .logo-dot  { width: 10px; height: 10px; border-radius: 50%; background: var(--rg); box-shadow: 0 0 0 4px rgba(0,196,122,.2); }
+  .logo-word { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: white; letter-spacing: -.4px; }
+  .logo-word em { font-style: normal; color: var(--rg); }
+  .hdr-copy { flex: 1; }
+  .hdr-tag { display: inline-block; background: var(--rg); color: var(--rn); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; margin-bottom: 12px; }
+  .hdr-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(22px, 3.5vw, 32px); color: white; line-height: 1.15; margin-bottom: 8px; }
+  .hdr-sub { color: rgba(255,255,255,.5); font-size: 13px; font-weight: 300; }
+
+  /* NAV */
+  .nav-strip { background: var(--rn-m); border-bottom: 2px solid var(--rg); overflow-x: auto; scrollbar-width: none; }
+  .nav-strip::-webkit-scrollbar { display: none; }
+  .nav-inner { max-width: 920px; margin: 0 auto; padding: 0 20px; display: flex; gap: 2px; }
+  .nav-inner a { flex-shrink: 0; display: inline-block; padding: 11px 15px; color: rgba(255,255,255,.5); font-size: 12px; font-weight: 500; letter-spacing: .3px; text-decoration: none; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; white-space: nowrap; }
+  .nav-inner a:hover { color: var(--rg); border-color: var(--rg); }
+
+  .page { max-width: 920px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  /* GERENCIA */
+  .mg-wrap { background: var(--rp); border-radius: var(--radius); padding: 36px 40px; margin-bottom: 36px; position: relative; overflow: hidden; }
+  .mg-wrap::before { content: '\201C'; font-family: 'Syne', sans-serif; font-size: 220px; line-height: .8; color: rgba(255,255,255,.07); position: absolute; right: 28px; top: 10px; pointer-events: none; }
+  .mg-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rg); margin-bottom: 12px; }
+  .mg-text  { font-size: 15px; color: rgba(255,255,255,.88); line-height: 1.75; font-style: italic; margin-bottom: 18px; max-width: 680px; }
+  .mg-who   { display: flex; align-items: center; gap: 12px; }
+  .mg-avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; color: white; font-size: 13px; }
+  .mg-firma { font-family: 'Syne', sans-serif; font-weight: 700; color: white; font-size: 14px; line-height: 1.2; }
+  .mg-cargo { color: rgba(255,255,255,.5); font-size: 12px; }
+
+  /* KPIs */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 36px; }
+  .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 20px 18px; text-align: center; position: relative; overflow: hidden; }
+  .kpi-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+  .kpi-card.p::after { background: var(--rp); }
+  .kpi-card.g::after { background: var(--rg); }
+  .kpi-card.o::after { background: var(--ro); }
+  .kpi-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 34px; line-height: 1; margin-bottom: 6px; }
+  .kpi-card.p .kpi-num { color: var(--rp); }
+  .kpi-card.g .kpi-num { color: var(--rg-d); }
+  .kpi-card.o .kpi-num { color: var(--ro); }
+  .kpi-lbl { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: .3px; }
+
+  /* SECTION HEADS */
+  .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; margin-top: 44px; }
+  .sec-head:first-child { margin-top: 0; }
+  .sec-ico { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+  .sec-ico.p { background: rgba(58,31,168,.1); }
+  .sec-ico.g { background: rgba(0,196,122,.13); }
+  .sec-ico.o { background: rgba(255,107,43,.1); }
+  .sec-ico.n { background: rgba(15,21,53,.07); }
+  .sec-head h2 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--ink); }
+  .mes-tag { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); background: rgba(122,122,154,.1); padding: 4px 12px; border-radius: 50px; white-space: nowrap; }
+
+  /* ANUNCIOS */
+  .anuncio { background: var(--white); border-radius: var(--rs); padding: 20px 24px; display: flex; align-items: flex-start; gap: 16px; margin-bottom: 12px; border: 1px solid var(--border); border-left: 4px solid var(--ro); }
+  .anuncio-ico { font-size: 24px; flex-shrink: 0; line-height: 1.4; }
+  .anuncio h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .anuncio p  { font-size: 13px; color: var(--ink-m); }
+
+  .div { height: 1px; background: var(--border); margin: 44px 0; }
+
+  /* ÁREA SECTION — diseño renovado */
+  .area-section { margin-bottom: 56px; }
+
+  .area-header { display: flex; align-items: stretch; border-radius: var(--radius); overflow: hidden; margin-bottom: 26px; border: 1px solid var(--border); }
+  .area-accent { width: 6px; flex-shrink: 0; }
+  .area-header-body { flex: 1; background: var(--white); padding: 22px 26px; display: flex; align-items: center; gap: 18px; }
+  .area-emoji-wrap { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+  .area-header-text h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
+  .area-header-text p  { font-size: 12px; color: var(--muted); }
+  .area-num { margin-left: auto; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 42px; line-height: 1; color: rgba(200,196,230,.55); flex-shrink: 0; }
+
+  /* TIMELINE cards */
+  .timeline { position: relative; padding-left: 34px; }
+  .timeline::before { content: ''; position: absolute; left: 12px; top: 18px; bottom: 18px; width: 2px; background: var(--border); border-radius: 2px; }
+
+  .tl-item { position: relative; margin-bottom: 18px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -27px; top: 20px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--white); }
+
+  .tl-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; position: relative; overflow: hidden; transition: transform .18s, box-shadow .18s; }
+  .tl-card:hover { transform: translateX(6px); box-shadow: -4px 4px 24px rgba(58,31,168,.1); }
+  .tl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+
+  .tl-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .tipo-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 12px; border-radius: 50px; }
+  .tipo-pill.logro   { background: rgba(0,158,99,.1);   color: var(--rg-d); }
+  .tipo-pill.novedad { background: rgba(58,31,168,.1);  color: var(--rp); }
+  .tipo-pill.alerta  { background: rgba(255,107,43,.1); color: var(--ro); }
+  .tipo-pill.info    { background: rgba(15,21,53,.08);  color: var(--rn-m); }
+
+  .tl-card h3 { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 7px; }
+  .tl-card p  { font-size: 13px; color: var(--ink-m); line-height: 1.68; }
+  .tl-stat { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border-radius: 7px; padding: 5px 12px; margin-top: 14px; font-size: 12px; color: var(--ink-m); }
+  .tl-stat strong { color: var(--ink); font-weight: 600; }
+
+  /* theme per tipo */
+  .logro-t   .tl-dot { background: var(--rg);   box-shadow: 0 0 0 4px rgba(0,196,122,.18); }
+  .novedad-t .tl-dot { background: var(--rp-x); box-shadow: 0 0 0 4px rgba(58,31,168,.15); }
+  .alerta-t  .tl-dot { background: var(--ro);   box-shadow: 0 0 0 4px rgba(255,107,43,.18); }
+  .info-t    .tl-dot { background: var(--rn-m); box-shadow: 0 0 0 4px rgba(15,21,53,.12);  }
+  .logro-t   .tl-card::before { background: var(--rg);   }
+  .novedad-t .tl-card::before { background: var(--rp-x); }
+  .alerta-t  .tl-card::before { background: var(--ro);   }
+  .info-t    .tl-card::before { background: var(--rn-m); }
+
+  /* CUMPLEAÑOS */
+  .bday-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .bday-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden; }
+  .bday-card::after { content: ''; position: absolute; right: -18px; top: -18px; width: 64px; height: 64px; border-radius: 50%; background: rgba(58,31,168,.05); }
+  .bday-av   { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--rp-x), var(--rg)); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: white; flex-shrink: 0; }
+  .bday-name { font-weight: 600; font-size: 13px; color: var(--ink); line-height: 1.3; }
+  .bday-info { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .bday-cake { font-size: 20px; margin-left: auto; position: relative; z-index: 1; }
+
+  /* FOOTER */
+  .footer { background: var(--rn); padding: 32px 20px; text-align: center; }
+  .footer-inner { max-width: 920px; margin: 0 auto; }
+  .ft-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: white; letter-spacing: -.3px; margin-bottom: 8px; }
+  .ft-logo em { font-style: normal; color: var(--rg); }
+  .ft-tag  { font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 16px; }
+  .ft-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+  .ft-links a { font-size: 12px; color: rgba(255,255,255,.45); text-decoration: none; transition: color .2s; }
+  .ft-links a:hover { color: var(--rg); }
+  .ft-edition { margin-top: 18px; font-size: 11px; color: rgba(255,255,255,.2); }
+
+  @media(max-width:600px){
+    .header-inner { flex-direction: column; align-items: flex-start; gap: 18px; }
+    .kpi-row { grid-template-columns: repeat(2,1fr); }
+    .bday-grid { grid-template-columns: 1fr; }
+    .area-num { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════ DATOS — EDITAR AQUÍ CADA MES ════════════════════ -->
+<script>
+const BD = {
+  edicion:   "Edición N.° 1",
+  mes:       "Mayo 2026",
+  fecha_pub: "13 de mayo de 2026",
+
+  gerencia: {
+    texto:    "Con orgullo compartimos este primer boletín interno de Rehavid. Este espacio nace como canal de comunicación, aprendizaje y reconocimiento para todo el equipo. Cada área tendrá voz aquí: logros, retos, noticias y aprendizajes que nos hacen crecer juntos. ¡Bienvenidos a nuestra primera edición!",
+    firma:    "Gerencia General",
+    cargo:    "Rehavid S.A.S.",
+    iniciales:"GG"
+  },
+
+  kpis: [
+    { valor: "72+",  label: "Profesionales activos",  color: "p" },
+    { valor: "9",    label: "Regiones con cobertura", color: "g" },
+    { valor: "14",   label: "Años de experiencia",    color: "o" },
+    { valor: "100%", label: "Compromiso del equipo",  color: "p" }
+  ],
+
+  anuncios: [
+    { icono: "📢", titulo: "Lanzamiento del Boletín Interno Rehavid",
+      descripcion: "A partir de junio, cada área aportará sus novedades más relevantes del mes para enriquecer esta publicación." },
+    { icono: "📅", titulo: "Próxima reunión de equipos: 20 de mayo",
+      descripcion: "Confirmar asistencia con su supervisor directo antes del 16 de mayo." }
+  ],
+
+  /* color: "p"(morado) | "g"(verde) | "o"(naranja) | "n"(navy) */
+  /* tipo:  "logro" | "novedad" | "alerta" | "info"              */
+  areas: [
+    {
+      id: "operaciones", nombre: "Operaciones", icono: "⚙️",
+      color: "p", subtitulo: "Asignación · Programación · Cobertura nacional",
+      noticias: [
+        { tipo: "logro",   titulo: "Cobertura nacional consolidada",
+          descripcion: "El equipo garantizó asignación efectiva de profesionales en las 9 regiones de cobertura durante el mes.", stat: null },
+        { tipo: "novedad", titulo: "Optimización en programación",
+          descripcion: "Se implementó ajuste en el proceso de programación de auxiliares para reducir tiempos de respuesta al cliente.", stat: null }
+      ]
+    },
+    {
+      id: "proyectos", nombre: "Gestión de Proyectos", icono: "📊",
+      color: "g", subtitulo: "Jefatura · Contactabilidad · Facturación",
+      noticias: [
+        { tipo: "logro", titulo: "Nuevos proyectos en planificación",
+          descripcion: "Se inició la fase de planificación de 2 proyectos estratégicos para el segundo semestre.", stat: "2 proyectos nuevos" },
+        { tipo: "info",  titulo: "Indicadores de contactabilidad",
+          descripcion: "El supervisor reporta avance positivo en las métricas de seguimiento de beneficiarios.", stat: null }
+      ]
+    },
+    {
+      id: "calidad", nombre: "Calidad e Innovación", icono: "🎯",
+      color: "o", subtitulo: "Calidad · Conocimiento · Diseño · Datos",
+      noticias: [
+        { tipo: "novedad", titulo: "Estructuración del Boletín Interno",
+          descripcion: "La Dirección lideró la creación de este canal de comunicación como herramienta de gestión del conocimiento.", stat: null },
+        { tipo: "logro",   titulo: "Cápsulas de formación con IA",
+          descripcion: "Se entregaron los primeros módulos de cápsulas formativas con IA para cliente piloto. Resultados positivos en apropiación.", stat: "Piloto aprobado" }
+      ]
+    },
+    {
+      id: "administrativo", nombre: "Administrativa y Contable", icono: "🗂️",
+      color: "n", subtitulo: "Contabilidad · Facturación · Analista Admón",
+      noticias: [
+        { tipo: "info",   titulo: "Proceso de facturación al día",
+          descripcion: "La supervisión reporta cierre del período sin pendientes. Se recuerda cumplir tiempos en entrega de soportes.", stat: null },
+        { tipo: "alerta", titulo: "Fecha límite: Cuentas de cobro",
+          descripcion: "Fecha límite de radicación: último día hábil de cada mes. Documentos incompletos no serán procesados.", stat: "Último día hábil del mes" }
+      ]
+    },
+    {
+      id: "th", nombre: "Talento Humano", icono: "👥",
+      color: "g", subtitulo: "Vinculación · Evaluación · Bienestar",
+      noticias: [
+        { tipo: "novedad", titulo: "Bienvenida a nuevos integrantes",
+          descripcion: "Este mes se incorporaron nuevos profesionales a los equipos de campo. ¡Bienvenidos a la familia Rehavid!", stat: null },
+        { tipo: "info",    titulo: "Evaluaciones de desempeño – junio",
+          descripcion: "El proceso de evaluación se activará en junio. Más información próximamente con los líderes de equipo.", stat: null }
+      ]
+    }
+  ],
+
+  cumpleanos: [
+    { nombre: "Ana Gómez",      area: "Operaciones",    dia: "3 de mayo"  },
+    { nombre: "Carlos Herrera", area: "Calidad",        dia: "11 de mayo" },
+    { nombre: "Laura Martínez", area: "Proyectos",      dia: "19 de mayo" },
+    { nombre: "Diego Rincón",   area: "Administrativo", dia: "27 de mayo" }
+  ]
+};
+</script>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-geo"></div>
+  <div class="header-inner">
+    <div class="logo-pill">
+      <div class="logo-dot"></div>
+      <span class="logo-word">R<em>e</em>havid</span>
+    </div>
+    <div class="hdr-copy">
+      <div class="hdr-tag" id="hdr-tag"></div>
+      <h1 class="hdr-title" id="hdr-title"></h1>
+      <p class="hdr-sub"   id="hdr-sub"></p>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-strip"><div class="nav-inner" id="nav"></div></nav>
+
+<main class="page">
+
+  <section class="mg-wrap" id="gerencia">
+    <div class="mg-label">Mensaje de Gerencia</div>
+    <p class="mg-text" id="mg-text"></p>
+    <div class="mg-who">
+      <div class="mg-avatar" id="mg-av"></div>
+      <div>
+        <div class="mg-firma" id="mg-firma"></div>
+        <div class="mg-cargo" id="mg-cargo"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <section id="anuncios">
+    <div class="sec-head">
+      <div class="sec-ico o">📣</div>
+      <h2>Anuncios Generales</h2>
+    </div>
+    <div id="anuncios-body"></div>
+  </section>
+
+  <div class="div"></div>
+  <div id="areas"></div>
+  <div class="div"></div>
+
+  <section id="cumpleanos">
+    <div class="sec-head">
+      <div class="sec-ico o">🎂</div>
+      <h2>Cumpleaños del mes</h2>
+      <span class="mes-tag" id="cumple-mes"></span>
+    </div>
+    <div class="bday-grid" id="bday-grid"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="ft-logo">R<em>e</em>havid S.A.S.</div>
+    <div class="ft-tag">Transformando entornos laborales — Seguros, saludables y productivos.</div>
+    <div class="ft-links">
+      <a href="https://www.rehavid.com.co" target="_blank">www.rehavid.com.co</a>
+      <a href="mailto:danna.villarraga@rehavid.com.co">danna.villarraga@rehavid.com.co</a>
+      <a href="tel:+573125814390">+57 312 581 4390</a>
+    </div>
+    <div class="ft-edition" id="ft-edition"></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const D = BD;
+  const $ = id => document.getElementById(id);
+
+  const accentHex = { p:'#3a1fa8', g:'#00c47a', o:'#ff6b2b', n:'#0f1535' };
+  const bgHex     = { p:'rgba(58,31,168,.09)', g:'rgba(0,196,122,.1)', o:'rgba(255,107,43,.09)', n:'rgba(15,21,53,.07)' };
+  const pilLabel  = { logro:'✦ Logro', novedad:'◈ Novedad', alerta:'⚠ Alerta', info:'● Info' };
+
+  $('hdr-tag').textContent    = D.edicion + ' · ' + D.mes;
+  $('hdr-title').textContent  = 'Boletín Interno · ' + D.mes;
+  $('hdr-sub').textContent    = 'Publicado el ' + D.fecha_pub + '  ·  Uso interno Rehavid';
+  $('ft-edition').textContent = D.edicion + ' — ' + D.mes + ' — Rehavid S.A.S.';
+
+  const navItems = [
+    {href:'#gerencia',label:'Gerencia'},{href:'#anuncios',label:'Anuncios'},
+    ...D.areas.map(a=>({href:'#area-'+a.id,label:a.nombre})),
+    {href:'#cumpleanos',label:'🎂 Cumpleaños'}
+  ];
+  navItems.forEach(i=>{ const a=document.createElement('a'); a.href=i.href; a.textContent=i.label; $('nav').appendChild(a); });
+
+  $('mg-text').textContent  = D.gerencia.texto;
+  $('mg-av').textContent    = D.gerencia.iniciales;
+  $('mg-firma').textContent = D.gerencia.firma;
+  $('mg-cargo').textContent = D.gerencia.cargo;
+
+  D.kpis.forEach(k=>{
+    $('kpis').innerHTML += `<div class="kpi-card ${k.color}"><div class="kpi-num">${k.valor}</div><div class="kpi-lbl">${k.label}</div></div>`;
+  });
+
+  D.anuncios.forEach(a=>{
+    $('anuncios-body').innerHTML += `<div class="anuncio"><div class="anuncio-ico">${a.icono}</div><div><h3>${a.titulo}</h3><p>${a.descripcion}</p></div></div>`;
+  });
+
+  D.areas.forEach((area, idx)=>{
+    const color = accentHex[area.color];
+    const bg    = bgHex[area.color];
+    const num   = String(idx+1).padStart(2,'0');
+
+    const noticiasHTML = area.noticias.map(n=>`
+      <div class="tl-item ${n.tipo}-t">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="tl-top"><span class="tipo-pill ${n.tipo}">${pilLabel[n.tipo]}</span></div>
+          <h3>${n.titulo}</h3>
+          <p>${n.descripcion}</p>
+          ${n.stat?`<div class="tl-stat"><strong>${n.stat}</strong></div>`:''}
+        </div>
+      </div>`).join('');
+
+    $('areas').innerHTML += `
+      <section class="area-section" id="area-${area.id}">
+        <div class="area-header">
+          <div class="area-accent" style="background:${color};"></div>
+          <div class="area-header-body">
+            <div class="area-emoji-wrap" style="background:${bg};">${area.icono}</div>
+            <div class="area-header-text">
+              <h2>${area.nombre}</h2>
+              <p>${area.subtitulo}</p>
+            </div>
+            <div class="area-num">${num}</div>
+          </div>
+        </div>
+        <div class="timeline">${noticiasHTML}</div>
+      </section>`;
+  });
+
+  $('cumple-mes').textContent = D.mes;
+  D.cumpleanos.forEach(p=>{
+    const ini = p.nombre.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    $('bday-grid').innerHTML += `
+      <div class="bday-card">
+        <div class="bday-av">${ini}</div>
+        <div><div class="bday-name">${p.nombre}</div><div class="bday-info">${p.dia} · ${p.area}</div></div>
+        <div class="bday-cake">🎉</div>
+      </div>`;
+  });
+})();
+</script>
+</body>
+</html>

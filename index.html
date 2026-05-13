@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Boletín Rehavid – Recolector</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --rp:#3a1fa8;--rp-l:#5b3dd4;--rp-x:#8a72e8;
+  --rg:#00c47a;--rg-d:#009e63;
+  --ro:#ff6b2b;--rn:#0f1535;--rn-m:#1c2554;
+  --ink:#1a1a2e;--ink-m:#3a3a5c;--muted:#7a7a9a;
+  --surface:#f0effe;--white:#ffffff;--border:#e0ddf5;
+  --radius:14px;--rs:9px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);font-size:15px;line-height:1.6;min-height:100vh}
+
+.app-header{background:var(--rn);position:relative;overflow:hidden}
+.app-header::before{content:'';position:absolute;width:420px;height:420px;border-radius:50%;background:var(--rp);opacity:.3;top:-180px;right:-80px;pointer-events:none}
+.app-header::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:var(--rg);opacity:.12;bottom:-60px;left:40px;pointer-events:none}
+.header-inner{max-width:780px;margin:0 auto;padding:32px 24px 28px;position:relative;z-index:1;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.logo-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-dot{width:9px;height:9px;border-radius:50%;background:var(--rg);box-shadow:0 0 0 3px rgba(0,196,122,.22)}
+.logo-word{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:white;letter-spacing:-.3px}
+.logo-word em{font-style:normal;color:var(--rg)}
+.header-copy h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(16px,3vw,22px);color:white;line-height:1.25;margin-bottom:4px}
+.header-copy p{color:rgba(255,255,255,.5);font-size:13px}
+
+.progress-wrap{background:var(--rn-m);border-bottom:1px solid rgba(255,255,255,.06);padding:14px 24px}
+.progress-inner{max-width:780px;margin:0 auto}
+.step-labels{display:flex;gap:0;margin-bottom:9px;overflow-x:auto;scrollbar-width:none}
+.step-labels::-webkit-scrollbar{display:none}
+.step-lbl{flex:1;min-width:60px;font-size:11px;font-weight:500;color:rgba(255,255,255,.3);text-align:center;padding:0 4px;white-space:nowrap;cursor:pointer;transition:color .2s}
+.step-lbl.active{color:var(--rg)}
+.step-lbl.done{color:rgba(255,255,255,.55)}
+.prog-track{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.prog-fill{height:3px;background:var(--rg);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+.main{max-width:780px;margin:0 auto;padding:32px 20px 80px}
+.panel{display:none}
+.panel.active{display:block;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.panel-head{margin-bottom:28px}
+.area-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:50px;margin-bottom:10px}
+.panel-head h2{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--ink);margin-bottom:5px}
+.panel-head p{font-size:13px;color:var(--muted)}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--ink-m);margin-bottom:7px}
+.field label .req{color:var(--ro);margin-left:2px}
+.field label .opt{font-weight:400;color:var(--muted);font-size:12px}
+input[type=text],textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:14px;border:1.5px solid var(--border);border-radius:var(--rs);padding:10px 14px;background:var(--white);color:var(--ink);transition:border-color .18s,box-shadow .18s;outline:none}
+input[type=text]:focus,textarea:focus{border-color:var(--rp-x);box-shadow:0 0 0 3px rgba(90,61,212,.12)}
+textarea{resize:vertical;min-height:76px}
+.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+.noticia-block{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:16px;transition:border-color .2s}
+.noticia-block:focus-within{border-color:var(--rp-x)}
+.noticia-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.tipo-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tipo-btn{padding:5px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;user-select:none}
+.tipo-btn:hover{border-color:var(--rp-x);color:var(--rp)}
+.tipo-btn.sel-logro{background:#e1f5ee;color:#085041;border-color:#5dcaa5;font-weight:600}
+.tipo-btn.sel-novedad{background:#eeedfe;color:#3c3489;border-color:#afa9ec;font-weight:600}
+.tipo-btn.sel-alerta{background:#faeeda;color:#633806;border-color:#ef9f27;font-weight:600}
+.tipo-btn.sel-info{background:#f1efe8;color:#444441;border-color:#b4b2a9;font-weight:600}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.kpi-block{background:var(--white);border:1.5px solid var(--border);border-radius:var(--rs);padding:14px 16px}
+.kpi-block label{font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:8px}
+.kpi-big{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;border:none;background:transparent;color:var(--rp);width:100%;outline:none;padding:0 0 4px;border-bottom:1.5px solid var(--border);font-family:'Syne',sans-serif}
+.kpi-big:focus{border-color:var(--rp-x)}
+.kpi-sub{font-size:12px;border:none;background:transparent;color:var(--muted);width:100%;outline:none;padding:4px 0 0;margin-top:4px;font-family:'DM Sans',sans-serif}
+
+.bday-area{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px}
+.bday-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.bday-row input{flex:1;min-width:100px;font-size:13px}
+.bday-add{background:none;border:1.5px dashed var(--border);border-radius:var(--rs);padding:9px;color:var(--muted);font-size:13px;cursor:pointer;width:100%;text-align:center;transition:border-color .2s,color .2s;font-family:'DM Sans',sans-serif;margin-top:4px}
+.bday-add:hover{border-color:var(--rp-x);color:var(--rp)}
+.bday-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;padding:2px 6px;line-height:1;flex-shrink:0}
+.bday-del:hover{color:var(--ro)}
+
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px;flex-wrap:wrap}
+.btn{padding:11px 24px;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--ink-m);transition:all .15s;font-family:'DM Sans',sans-serif}
+.btn:hover{border-color:var(--rp-x);color:var(--rp)}
+.btn-primary{background:var(--rp);color:white;border-color:var(--rp)}
+.btn-primary:hover{background:var(--rp-l);border-color:var(--rp-l)}
+.btn-success{background:var(--rg-d);color:white;border-color:var(--rg-d)}
+.btn-success:hover{background:#007a4d}
+
+.summary-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:24px}
+.s-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--rs);padding:14px;text-align:center}
+.s-card.ok{border-color:var(--rg);background:#f0fbf7}
+.s-card .sc-n{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.s-card .sc-v{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--ink)}
+.s-card.ok .sc-v{color:var(--rg-d)}
+.s-card .sc-s{font-size:11px;color:var(--muted)}
+
+.json-box{background:var(--rn);border-radius:var(--radius);padding:22px;margin-bottom:16px}
+.json-box pre{font-family:'Courier New',monospace;font-size:12px;color:rgba(255,255,255,.8);white-space:pre-wrap;word-break:break-word;max-height:340px;overflow-y:auto;line-height:1.6}
+.json-box pre::-webkit-scrollbar{width:4px}
+.json-box pre::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+
+.copy-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.btn-copy{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--ink-m);transition:all .15s;font-family:'DM Sans',sans-serif}
+.btn-copy:hover{border-color:var(--rp-x);color:var(--rp)}
+.btn-copy.copied{background:#e1f5ee;border-color:#5dcaa5;color:#085041}
+
+.instruction-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:22px 26px}
+.instruction-box h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.step-list{list-style:none;counter-reset:steps}
+.step-list li{counter-increment:steps;display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;font-size:13px;color:var(--ink-m)}
+.step-list li::before{content:counter(steps);min-width:22px;height:22px;border-radius:50%;background:var(--rp);color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+code{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:'Courier New',monospace;font-size:12px;color:var(--rp)}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--rg-d);color:white;padding:12px 24px;border-radius:50px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.divider{height:1px;background:var(--border);margin:24px 0}
+
+@media(max-width:560px){
+  .row2,.row3{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .btn-row{flex-direction:column-reverse}
+  .btn,.btn-primary,.btn-success{width:100%;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="logo-pill">
+      <div class="logo-dot"></div>
+      <span class="logo-word">R<em>e</em>havid</span>
+    </div>
+    <div class="header-copy">
+      <h1>Recolector de Información<br>Boletín Interno Mensual</h1>
+      <p>Completa tu sección · El sistema genera el boletín automáticamente.</p>
+    </div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <div class="step-labels" id="step-labels"></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:12%"></div></div>
+  </div>
+</div>
+
+<main class="main" id="main"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+const STEPS=[
+  {id:'meta',      label:'General'},
+  {id:'ops',       label:'Operaciones'},
+  {id:'proyectos', label:'Proyectos'},
+  {id:'calidad',   label:'Calidad'},
+  {id:'admin',     label:'Admón'},
+  {id:'th',        label:'Talento H.'},
+  {id:'kpis',      label:'KPIs'},
+  {id:'resultado', label:'Resultado'},
+];
+
+const AREAS=[
+  {id:'ops',       nombre:'Operaciones',              sub:'Asignación · Programación · Cobertura',       icono:'⚙️',color:'p',badge:{bg:'#eeedfe',col:'#3c3489'}},
+  {id:'proyectos', nombre:'Gestión de Proyectos',      sub:'Jefatura · Contactabilidad · Facturación',    icono:'📊',color:'g',badge:{bg:'#e1f5ee',col:'#085041'}},
+  {id:'calidad',   nombre:'Calidad e Innovación',      sub:'Calidad · Conocimiento · Diseño · Datos',     icono:'🎯',color:'o',badge:{bg:'#faeeda',col:'#633806'}},
+  {id:'admin',     nombre:'Administrativa y Contable', sub:'Contabilidad · Facturación · Analista Admón', icono:'🗂️',color:'n',badge:{bg:'#f1efe8',col:'#444441'}},
+  {id:'th',        nombre:'Talento Humano',            sub:'Vinculación · Evaluación · Bienestar',        icono:'👥',color:'g',badge:{bg:'#eaf3de',col:'#27500a'}},
+];
+
+const TIPOS={logro:'✦ Logro',novedad:'◈ Novedad',alerta:'⚠ Alerta',info:'● Info'};
+
+/* ── STATE ── */
+const S={
+  meta:{edicion:'',mes:'',fecha_pub:'',gtexto:'',gfirma:'Gerencia General',gcargo:'Rehavid S.A.S.',gini:'GG',a1t:'',a1d:'',a2t:'',a2d:''},
+  areas:{},
+  kpis:[
+    {valor:'',label:'Profesionales activos',color:'p'},
+    {valor:'',label:'Regiones con cobertura',color:'g'},
+    {valor:'',label:'Años de experiencia',color:'o'},
+    {valor:'',label:'Compromiso del equipo',color:'p'},
+  ],
+  cumpleanos:[],
+};
+AREAS.forEach(a=>{
+  S.areas[a.id]={sub:a.sub,noticias:[
+    {tipo:'logro',titulo:'',descripcion:'',stat:''},
+    {tipo:'info', titulo:'',descripcion:'',stat:''},
+  ]};
+});
+
+let cur=0;
+
+/* ── UTILS ── */
+const $=id=>document.getElementById(id);
+const gv=id=>$(id)?.value||'';
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
+
+/* ── NAVIGATION ── */
+function goTo(n){
+  save(cur);
+  cur=Math.max(0,Math.min(n,STEPS.length-1));
+  document.querySelectorAll('.step-lbl').forEach((el,i)=>{
+    el.className='step-lbl'+(i===cur?' active':i<cur?' done':'');
+  });
+  const pct=Math.round(((cur+1)/STEPS.length)*100);
+  $('prog-fill').style.width=pct+'%';
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===cur));
+  if(cur===STEPS.length-1) renderOutput();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function next(){goTo(cur+1)}
+function prev(){goTo(cur-1)}
+
+/* ── SAVE ── */
+function save(idx){
+  const id=STEPS[idx].id;
+  if(id==='meta')      saveMeta();
+  else if(id==='kpis') saveKpis();
+  else if(id==='resultado') return;
+  else saveArea(id);
+}
+
+function saveMeta(){
+  Object.assign(S.meta,{
+    edicion:gv('m-edicion'),mes:gv('m-mes'),fecha_pub:gv('m-fecha'),
+    gtexto:gv('m-gtexto'),gfirma:gv('m-gfirma'),gcargo:gv('m-gcargo'),
+    gini:gv('m-gini').toUpperCase(),
+    a1t:gv('a1-t'),a1d:gv('a1-d'),a2t:gv('a2-t'),a2d:gv('a2-d'),
+  });
+}
+
+function saveArea(id){
+  const p=document.querySelector(`.panel[data-id="${id}"]`);if(!p)return;
+  S.areas[id].sub=p.querySelector('.a-sub')?.value||S.areas[id].sub;
+  p.querySelectorAll('.n-titulo').forEach(el=>{const i=+el.dataset.ni;S.areas[id].noticias[i].titulo=el.value;});
+  p.querySelectorAll('.n-desc').forEach(el=>{const i=+el.dataset.ni;S.areas[id].noticias[i].descripcion=el.value;});
+  p.querySelectorAll('.n-stat').forEach(el=>{const i=+el.dataset.ni;S.areas[id].noticias[i].stat=el.value||null;});
+}
+
+function saveKpis(){
+  S.kpis.forEach((k,i)=>{k.valor=gv('kv-'+i);k.label=gv('kl-'+i)||k.label;});
+  S.cumpleanos=[];
+  document.querySelectorAll('.bday-row').forEach(row=>{
+    const ins=row.querySelectorAll('input');
+    if(ins[0]?.value) S.cumpleanos.push({nombre:ins[0].value,area:ins[1].value,dia:ins[2].value});
+  });
+}
+
+/* ── BUILD UI ── */
+function init(){
+  /* step labels */
+  const lc=$('step-labels');
+  STEPS.forEach((s,i)=>{
+    const el=document.createElement('span');
+    el.className='step-lbl'+(i===0?' active':'');
+    el.textContent=s.label;el.onclick=()=>goTo(i);
+    lc.appendChild(el);
+  });
+
+  const main=$('main');
+  main.appendChild(panelMeta());
+  AREAS.forEach((a,i)=>main.appendChild(panelArea(a,i+1)));
+  main.appendChild(panelKpis());
+  const out=document.createElement('div');
+  out.className='panel';out.id='output-panel';
+  main.appendChild(out);
+  main.querySelector('.panel').classList.add('active');
+}
+
+function navRow(extra=''){
+  return`<div class="btn-row">
+    <button class="btn" onclick="prev()" ${cur===0?'style="visibility:hidden"':''}>← Anterior</button>
+    ${extra}
+    <button class="btn btn-primary" onclick="next()">Siguiente →</button>
+  </div>`;
+}
+
+function panelMeta(){
+  const m=S.meta;
+  const p=document.createElement('div');
+  p.className='panel';
+  p.innerHTML=`
+  <div class="panel-head">
+    <h2>Información general del boletín</h2>
+    <p>Encabezado, mensaje de gerencia y anuncios institucionales del mes.</p>
+  </div>
+  <div class="row3">
+    <div class="field"><label>Edición <span class="req">*</span></label><input type="text" id="m-edicion" placeholder="Edición N.° 2" value="${m.edicion}"></div>
+    <div class="field"><label>Mes y año <span class="req">*</span></label><input type="text" id="m-mes" placeholder="Junio 2026" value="${m.mes}"></div>
+    <div class="field"><label>Fecha de publicación</label><input type="text" id="m-fecha" placeholder="1 de junio de 2026" value="${m.fecha_pub}"></div>
+  </div>
+  <div class="field"><label>Mensaje de Gerencia <span class="req">*</span></label>
+    <textarea id="m-gtexto" style="min-height:100px" placeholder="Escribe el mensaje institucional del mes...">${m.gtexto}</textarea>
+  </div>
+  <div class="row3">
+    <div class="field"><label>Firma</label><input type="text" id="m-gfirma" value="${m.gfirma}"></div>
+    <div class="field"><label>Cargo</label><input type="text" id="m-gcargo" value="${m.gcargo}"></div>
+    <div class="field"><label>Iniciales avatar</label><input type="text" id="m-gini" maxlength="2" value="${m.gini}" style="text-transform:uppercase"></div>
+  </div>
+  <div class="divider"></div>
+  <p style="font-size:13px;font-weight:500;color:var(--ink-m);margin-bottom:16px">Anuncios generales del mes (máximo 2)</p>
+  <div class="row2">
+    <div>
+      <div class="field"><label>Anuncio 1 — Título</label><input type="text" id="a1-t" placeholder="Ej: Cierre de proyectos Q2" value="${m.a1t}"></div>
+      <div class="field"><label>Anuncio 1 — Descripción</label><textarea id="a1-d" style="min-height:56px" placeholder="Breve descripción...">${m.a1d}</textarea></div>
+    </div>
+    <div>
+      <div class="field"><label>Anuncio 2 — Título</label><input type="text" id="a2-t" placeholder="Ej: Reunión de equipos 15 de junio" value="${m.a2t}"></div>
+      <div class="field"><label>Anuncio 2 — Descripción</label><textarea id="a2-d" style="min-height:56px" placeholder="Breve descripción...">${m.a2d}</textarea></div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <span></span>
+    <button class="btn btn-primary" onclick="next()">Siguiente →</button>
+  </div>`;
+  return p;
+}
+
+function panelArea(area){
+  const a=S.areas[area.id];
+  const p=document.createElement('div');
+  p.className='panel';p.dataset.id=area.id;
+
+  const nHTML=a.noticias.map((n,i)=>{
+    const btns=Object.entries(TIPOS).map(([t,lbl])=>
+      `<button class="tipo-btn${n.tipo===t?' sel-'+t:''}" data-ni="${i}" data-tipo="${t}" data-aid="${area.id}">${lbl}</button>`
+    ).join('');
+    return`<div class="noticia-block">
+      <div class="noticia-num">Noticia ${i+1} de 2</div>
+      <div class="tipo-sel" data-grupo="g-${area.id}-${i}">${btns}</div>
+      <div class="field" style="margin-bottom:12px">
+        <label>Título <span class="req">*</span></label>
+        <input type="text" class="n-titulo" data-ni="${i}" placeholder="Título breve y directo" value="${n.titulo}">
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>Descripción <span class="req">*</span></label>
+        <textarea class="n-desc" data-ni="${i}" placeholder="2-3 líneas con el hecho más relevante del mes...">${n.descripcion}</textarea>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Dato destacado <span class="opt">(opcional — ej: "3 clientes nuevos")</span></label>
+        <input type="text" class="n-stat" data-ni="${i}" placeholder="Dejar vacío si no aplica" value="${n.stat||''}">
+      </div>
+    </div>`;
+  }).join('');
+
+  p.innerHTML=`
+  <div class="panel-head">
+    <div class="area-badge" style="background:${area.badge.bg};color:${area.badge.col}">${area.icono} ${area.nombre}</div>
+    <h2>${area.nombre}</h2>
+    <p>${area.sub} — Comparte las 2 novedades más relevantes del mes.</p>
+  </div>
+  <div class="field">
+    <label>Subtítulo del área <span class="opt">(editable)</span></label>
+    <input type="text" class="a-sub" value="${a.sub}">
+  </div>
+  ${nHTML}
+  ${navRow()}`;
+
+  p.querySelectorAll('.tipo-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const ni=+btn.dataset.ni,tipo=btn.dataset.tipo,aid=btn.dataset.aid;
+      S.areas[aid].noticias[ni].tipo=tipo;
+      btn.closest('[data-grupo]').querySelectorAll('.tipo-btn').forEach(b=>{
+        b.className='tipo-btn'+(b.dataset.tipo===tipo?' sel-'+tipo:'');
+      });
+    });
+  });
+  return p;
+}
+
+function panelKpis(){
+  const p=document.createElement('div');
+  p.className='panel';
+
+  const kHTML=S.kpis.map((k,i)=>`
+    <div class="kpi-block">
+      <label>KPI ${i+1}</label>
+      <input class="kpi-big" id="kv-${i}" value="${k.valor}" placeholder="0">
+      <input class="kpi-sub" id="kl-${i}" value="${k.label}" placeholder="Etiqueta del KPI">
+    </div>`).join('');
+
+  p.innerHTML=`
+  <div class="panel-head">
+    <h2>KPIs e indicadores del mes</h2>
+    <p>Cifras clave del encabezado. Edita valores y etiquetas libremente.</p>
+  </div>
+  <div class="kpi-grid">${kHTML}</div>
+  <div class="divider"></div>
+  <div class="panel-head" style="margin-bottom:16px">
+    <h2 style="font-size:17px">Cumpleaños del mes</h2>
+    <p>Colaboradores que cumplen años este mes.</p>
+  </div>
+  <div class="bday-area">
+    <div id="bday-rows"></div>
+    <button class="bday-add" onclick="addBday()">+ Agregar persona</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="prev()">← Anterior</button>
+    <button class="btn btn-success" onclick="saveKpis();goTo(7)">Generar boletín ↗</button>
+  </div>`;
+
+  setTimeout(()=>{
+    if(!S.cumpleanos.length) S.cumpleanos.push({nombre:'',area:'',dia:''});
+    S.cumpleanos.forEach(c=>addBdayRow(c.nombre,c.area,c.dia));
+  },30);
+  return p;
+}
+
+function addBday(){addBdayRow('','','');}
+function addBdayRow(nombre,area,dia){
+  const c=$('bday-rows');
+  if(!c) return;
+  const row=document.createElement('div');
+  row.className='bday-row';
+  row.innerHTML=`
+    <input type="text" placeholder="Nombre y apellido" value="${nombre}" style="flex:2;min-width:120px">
+    <input type="text" placeholder="Área" value="${area}" style="flex:1;min-width:80px">
+    <input type="text" placeholder="Ej: 5 de junio" value="${dia}" style="flex:1;min-width:100px">
+    <button class="bday-del" onclick="this.parentElement.remove()" title="Eliminar">×</button>`;
+  c.appendChild(row);
+}
+
+/* ── OUTPUT ── */
+function renderOutput(){
+  const p=$('output-panel');
+
+  const anuncios=[];
+  if(S.meta.a1t) anuncios.push({icono:'📢',titulo:S.meta.a1t,descripcion:S.meta.a1d});
+  if(S.meta.a2t) anuncios.push({icono:'📅',titulo:S.meta.a2t,descripcion:S.meta.a2d});
+
+  const areas=AREAS.map(a=>({
+    id:a.id,nombre:a.nombre,icono:a.icono,color:a.color,
+    subtitulo:S.areas[a.id].sub,
+    noticias:S.areas[a.id].noticias
+      .filter(n=>n.titulo)
+      .map(n=>({tipo:n.tipo,titulo:n.titulo,descripcion:n.descripcion,stat:n.stat||null}))
+  }));
+
+  const json={
+    edicion: S.meta.edicion||'Edición N.° X',
+    mes:     S.meta.mes||'Mes 2026',
+    fecha_pub: S.meta.fecha_pub||'',
+    gerencia:{
+      texto:    S.meta.gtexto,
+      firma:    S.meta.gfirma,
+      cargo:    S.meta.gcargo,
+      iniciales:S.meta.gini,
+    },
+    kpis:  S.kpis.filter(k=>k.valor),
+    anuncios,
+    areas,
+    cumpleanos: S.cumpleanos.filter(c=>c.nombre),
+  };
+
+  const js=JSON.stringify(json,null,2);
+  const filled=areas.filter(a=>a.noticias.length>0).length;
+
+  const cards=AREAS.map(a=>{
+    const cnt=S.areas[a.id].noticias.filter(n=>n.titulo).length;
+    return`<div class="s-card${cnt>0?' ok':''}">
+      <div class="sc-n">${a.nombre}</div>
+      <div class="sc-v">${cnt}</div>
+      <div class="sc-s">noticia${cnt!==1?'s':''}</div>
+    </div>`;
+  }).join('');
+
+  p.innerHTML=`
+  <div class="panel-head">
+    <h2>JSON generado ✓</h2>
+    <p>${filled} de 5 áreas con contenido cargado este mes.</p>
+  </div>
+  <div class="summary-strip">${cards}</div>
+  <div class="copy-row">
+    <button class="btn-copy" id="copy-btn">📋 Copiar JSON</button>
+    <button class="btn" onclick="goTo(0)">← Volver a editar</button>
+  </div>
+  <div class="json-box"><pre id="json-pre">${escH(js)}</pre></div>
+  <div class="instruction-box">
+    <h3>¿Cómo usar este JSON en el boletín?</h3>
+    <ol class="step-list">
+      <li>Copia el JSON con el botón de arriba.</li>
+      <li>Abre el archivo <code>boletin.html</code> en un editor de texto.</li>
+      <li>Busca la línea <code>const BD = {</code> y reemplaza todo el objeto.</li>
+      <li>Guarda el archivo y distribúyelo por correo o Teams.</li>
+    </ol>
+  </div>`;
+
+  $('copy-btn').addEventListener('click',()=>{
+    navigator.clipboard.writeText(js).then(()=>{
+      const btn=$('copy-btn');
+      btn.classList.add('copied');btn.textContent='✓ Copiado';
+      toast('JSON copiado al portapapeles');
+      setTimeout(()=>{btn.classList.remove('copied');btn.textContent='📋 Copiar JSON';},2500);
+    }).catch(()=>{
+      const el=$('json-pre');
+      const sel=window.getSelection(),r=document.createRange();
+      r.selectNodeContents(el);sel.removeAllRanges();sel.addRange(r);
+      toast('Selecciona el texto y copia con Ctrl+C');
+    });
+  });
+}
+
+init();
+</script>
+</body>
+</html>
